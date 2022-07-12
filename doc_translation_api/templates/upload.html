@@ -28,11 +28,14 @@
           <option value="japanese">Japanese</option>
         </select>
         <br>
-        <input type="submit" id="submitButton" value="Transcribe"/>
+       <a href="/return-files/" target="blank"> <input type="submit" id="submitButton" value="Translate"/></a>
     </form>
+    <div class="container" align="left">
+        <a href="/return-files/" target="blank"><button class='btn btn-default'>Download!</button></a>
+   </div>
     {% if text != "" %}
     <div id="speechTranscriptContainer">
-        <h1>Transcript</h1>
+        <h1>Translate</h1>
         <p id="speechText">{{ text }}</p>
     </div>
     {% endif %}
