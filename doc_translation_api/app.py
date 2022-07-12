@@ -1,15 +1,17 @@
 from flask import Flask, render_template
-from flask import request
-from translate import Translator_Inference
+from flask import request, send_file
+from fixed_translate import Translator_Inference
 from docx import Document
 from io import StringIO
+from io import BytesIO
 
 app = Flask(__name__, template_folder='templates')
-
+global fn
+fn = "No jobs completed"
 @app.route("/", methods=["POST", "GET"])
 def index():
-    text = ""
-
+    text = "" 
+    fn = ""
     if request.method=="POST":
         if "file" not in request.files:
             return redirect(request.url)
@@ -18,17 +20,23 @@ def index():
             return redirect(request.url)
         
         if file:
-            source = request.form.get(srcLang)
+            source = request.form.get('srcLang')
             target = request.form.get('targetLang')
-            asr = translator_inference(file, source, target)
+            asr = Translator_Inference(file, source, target)
             document = asr.run_translate()
-            f = BytesIO()
-            document.save(f)
-            f.seek(0)
-            new_file_name = file.filename + "_translated"
-    return send_file(f,
-                     as_attachment=True,
-                     attachment_filename=new_file_name)
+            fn = 'translated_doc'
+            document.save(fn)
+            # f = BytesIO()
+            # document.save(f)
+            # f.seek(0)
+    return render_template("upload.html", text = str(fn))
+    
+@app.route('/return-files/')
+def return_files_tut():
+    try:
+        return send_file('/Users/reshea/Documents/Work/doc_translation/doc_translation_api/translated_doc', attachment_filename='translated_doc.docx')
+    except Exception as e:
+        return str(e)
 
 
 if __name__=="__main__":
